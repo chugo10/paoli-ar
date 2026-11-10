@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Paoli 300 anni — expérience AR</title>
+
+  <!-- MindAR + A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <!-- GSAP pilote la séquence de 5 secondes -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#111827; font-family:Georgia,serif; }
+    .overlay {
+      position:fixed; z-index:10; inset:0; display:flex; flex-direction:column;
+      align-items:center; justify-content:space-between; padding:22px 18px;
+      color:#f0d18a; text-align:center; pointer-events:none;
+      background:linear-gradient(180deg,rgba(10,18,32,.72),transparent 28%,transparent 72%,rgba(10,18,32,.65));
+      box-sizing:border-box;
+    }
+    .brand { font-size:13px; letter-spacing:.18em; text-transform:uppercase; }
+    .hint { font:14px Arial,sans-serif; letter-spacing:.03em; }
+    #status { font:12px Arial,sans-serif; color:#fff0c9; opacity:.9; }
+    .hidden { display:none; }
+    a-scene { position:fixed; inset:0; }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="brand">Università di Corsica · Pasquale Paoli</div>
+    <div>
+      <div class="hint" id="hint">Pointe la caméra vers la bannière</div>
+      <div id="status">Initialisation de la caméra…</div>
+    </div>
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./assets/paoli.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    embedded>
+
+    <a-assets>
+      <img id="poster" src="./assets/banniere-paoli.png">
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- L'image cible entière mesure 1 unité de large. Son ratio est environ 7,78:1. -->
+    <a-entity id="target" mindar-image-target="targetIndex: 0">
+
+      <!-- Sculpture 3D stylisée temporaire : elle sera remplacée par le modèle GLB final. -->
+      <a-entity id="bust" position="-0.265 0 0.08" scale="0.001 0.001 0.001">
+        <!-- épaules / buste -->
+        <a-sphere radius="0.078" position="0 -0.105 0" scale="1.45 0.72 0.62"
+          material="color:#263e57; roughness:0.72"></a-sphere>
+        <a-cylinder radius="0.038" height="0.045" position="0 -0.045 0"
+          material="color:#d4a56e; roughness:0.8"></a-cylinder>
+        <!-- tête -->
+        <a-sphere radius="0.047" position="0 0.025 0.005"
+          material="color:#d8b28a; roughness:0.82"></a-sphere>
+        <!-- cheveux stylisés -->
+        <a-sphere radius="0.049" position="0 0.049 -0.004" scale="1.02 0.55 0.98"
+          material="color:#263e57; roughness:0.9"></a-sphere>
+        <!-- veste -->
+        <a-sphere radius="0.065" position="0 -0.115 0.01" scale="1.22 0.58 0.68"
+          material="color:#40556b; roughness:0.85"></a-sphere>
+        <!-- petit médaillon doré -->
+        <a-sphere radius="0.012" position="0 -0.105 0.055"
+          material="color:#e6c477; metalness:0.65; roughness:0.28"></a-sphere>
+      </a-entity>
+
+      <!-- Anneau lumineux qui accompagne l'émergence -->
+      <a-torus id="halo" position="-0.265 0 0.12" radius="0.105" radius-tubular="0.003"
+        rotation="0 0 0" material="color:#e7c477; emissive:#a9782c; emissiveIntensity:1.4"
+        scale="0.001 0.001 0.001"></a-torus>
+
+      <!-- Particules dorées -->
+      <a-entity id="particles">
+        <a-sphere class="spark" radius="0.008" position="-0.36 0.02 0.14" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
+        <a-sphere class="spark" radius="0.006" position="-0.18 0.06 0.16" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
+        <a-sphere class="spark" radius="0.007" position="-0.34 -0.05 0.12" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
+        <a-sphere class="spark" radius="0.005" position="-0.16 -0.03 0.18" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
+        <a-sphere class="spark" radius="0.006" position="-0.28 0.08 0.13" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
+      </a-entity>
+
+      <!-- Titre en relief visuel, placé au-dessus de la partie droite de la bannière -->
+      <a-entity id="anniversary" position="0.285 -0.005 0.13" scale="0.001 0.001 0.001">
+        <a-text value="300" align="center" color="#f0d18a" width="1.1"
+          position="0 0.045 0" side="double"
+          material="shader:standard; metalness:0.55; roughness:0.3"></a-text>
+        <a-text value="ANNI" align="center" color="#f0d18a" width="0.8"
+          position="0 -0.025 0" side="double"
+          material="shader:standard; metalness:0.55; roughness:0.3"></a-text>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const hintEl = document.getElementById('hint');
+    const bust = document.getElementById('bust');
+    const halo = document.getElementById('halo');
+    const anniversary = document.getElementById('anniversary');
+    const sparks = document.querySelectorAll('.spark');
+    let timeline = null;
+
+    function resetScene() {
+      if (timeline) timeline.kill();
+      bust.setAttribute('scale', '0.001 0.001 0.001');
+      bust.setAttribute('position', '-0.265 0 0.08');
+      halo.setAttribute('scale', '0.001 0.001 0.001');
+      anniversary.setAttribute('scale', '0.001 0.001 0.001');
+      sparks.forEach((s) => {
+        s.setAttribute('scale', '0.001 0.001 0.001');
+      });
+    }
+
+    function playSequence() {
+      resetScene();
+      const state = { bustScale: 0.001, haloScale: 0.001, titleScale: 0.001, glow: 0 };
+      timeline = gsap.timeline();
+      timeline.to(state, {
+        bustScale: 1, duration: 1.05, ease: 'back.out(1.7)',
+        onUpdate: () => bust.setAttribute('scale', `${state.bustScale} ${state.bustScale} ${state.bustScale}`)
+      }, 0.15);
+      timeline.to(state, {
+        haloScale: 1, duration: 0.8, ease: 'back.out(2)',
+        onUpdate: () => halo.setAttribute('scale', `${state.haloScale} ${state.haloScale} ${state.haloScale}`)
+      }, 0.75);
+      timeline.to(state, {
+        titleScale: 1, duration: 0.7, ease: 'back.out(1.8)',
+        onUpdate: () => anniversary.setAttribute('scale', `${state.titleScale} ${state.titleScale} ${state.titleScale}`)
+      }, 3.9);
+      sparks.forEach((spark, i) => {
+        const p = { scale: 0.001 };
+        timeline.to(p, {
+          scale: 1, duration: 0.35, yoyo: true, repeat: 2,
+          onUpdate: () => spark.setAttribute('scale', `${p.scale} ${p.scale} ${p.scale}`)
+        }, 1.8 + i * 0.12);
+      });
+      // Fin de séquence à 5 secondes : le rendu reste visible tant que la cible est suivie.
+      timeline.call(() => { statusEl.textContent = 'Expérience Paoli activée'; }, [], 5);
+    }
+
+    const target = document.getElementById('target');
+    target.addEventListener('targetFound', () => {
+      statusEl.textContent = 'Bannière reconnue';
+      hintEl.textContent = 'Paoli prend vie';
+      playSequence();
+    });
+    target.addEventListener('targetLost', () => {
+      statusEl.textContent = 'Bannière non détectée';
+      hintEl.textContent = 'Pointe la caméra vers la bannière';
+      resetScene();
+    });
+
+    document.querySelector('a-scene').addEventListener('loaded', () => {
+      statusEl.textContent = 'Autorise la caméra puis scanne la bannière';
+    });
+    document.querySelector('a-scene').addEventListener('arError', () => {
+      statusEl.textContent = 'Erreur AR : vérifie les permissions caméra et le fichier paoli.mind';
+    });
+  </script>
+</body>
+</html>
