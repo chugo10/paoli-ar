@@ -1,170 +1,459 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Paoli 300 anni — livre en réalité augmentée</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Paoli - 300 Anni en réalité augmentée</title>
+
+  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- GSAP -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
   <style>
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111827;font-family:Georgia,serif}
-    .overlay{position:fixed;z-index:10;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:22px 18px;color:#f0d18a;text-align:center;pointer-events:none;background:linear-gradient(180deg,rgba(10,18,32,.72),transparent 28%,transparent 72%,rgba(10,18,32,.65));box-sizing:border-box}
-    .brand{font-size:13px;letter-spacing:.18em;text-transform:uppercase}
-    .hint{font:14px Arial,sans-serif;letter-spacing:.03em}
-    #status{font:12px Arial,sans-serif;color:#fff0c9;opacity:.9}
-    a-scene{position:fixed;inset:0}
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent !important;
+      font-family: Georgia, serif;
+    }
+
+    a-scene {
+      position: fixed !important;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent !important;
+    }
+
+    a-scene canvas {
+      background: transparent !important;
+    }
+
+    .interface {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #f0d18a;
+      text-align: center;
+    }
+
+    .titre {
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 5px #000;
+    }
+
+    #message {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: white;
+      text-shadow: 0 2px 5px black;
+    }
   </style>
 </head>
+
 <body>
-  <div class="overlay">
-    <div class="brand">Università di Corsica · Pasquale Paoli</div>
-    <div>
-      <div class="hint" id="hint">Pointe la caméra vers la bannière</div>
-      <div id="status">Initialisation de la caméra…</div>
+
+  <div class="interface">
+    <div class="titre">
+      UNIVERSITÀ DI CORSICA · PASQUALE PAOLI
+    </div>
+
+    <div id="message">
+      Recherche de la bannière...
     </div>
   </div>
 
   <a-scene
-    mindar-image="imageTargetSrc: ./assets/paoli.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
-    color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"
-    vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
+    mindar-image="
+      imageTargetSrc: ./assets/paoli.mind;
+      autoStart: true;
+      uiLoading: no;
+      uiScanning: no;
+      uiError: no;
+    "
+    color-space="sRGB"
+    renderer="alpha: true; colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    embedded>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
 
-    <a-entity id="target" mindar-image-target="targetIndex: 0">
-      <!-- Livre ancien flottant au-dessus de la bannière -->
-      <a-entity id="book" position="-0.16 -0.005 0.11" rotation="0 0 0" scale="0.001 0.001 0.001">
-        <!-- Tranche et dos -->
-        <a-box position="0 0 0" width="0.31" height="0.018" depth="0.205"
-          material="color:#4a2117; roughness:0.82"></a-box>
-        <a-box position="0 0.012 -0.006" width="0.305" height="0.012" depth="0.198"
-          material="color:#d9c18b; roughness:0.95"></a-box>
-        <!-- Feuillets visibles -->
-        <a-box position="-0.074 0.022 0" width="0.145" height="0.009" depth="0.185"
-          material="color:#f1e4c2; roughness:1"></a-box>
-        <a-box position="0.074 0.022 0" width="0.145" height="0.009" depth="0.185"
-          material="color:#f1e4c2; roughness:1"></a-box>
-        <!-- Lignes de texte gravées sur les pages -->
-        <a-entity id="pageLines" position="0 0.028 0.012">
-          <a-box position="-0.075 0 -0.035" width="0.095" height="0.0015" depth="0.001" material="color:#9c8968"></a-box>
-          <a-box position="-0.075 0 -0.015" width="0.105" height="0.0015" depth="0.001" material="color:#9c8968"></a-box>
-          <a-box position="-0.075 0 0.005" width="0.09" height="0.0015" depth="0.001" material="color:#9c8968"></a-box>
-          <a-box position="0.075 0 -0.035" width="0.095" height="0.0015" depth="0.001" material="color:#9c8968"></a-box>
-          <a-box position="0.075 0 -0.015" width="0.105" height="0.0015" depth="0.001" material="color:#9c8968"></a-box>
-          <a-box position="0.075 0 0.005" width="0.09" height="0.0015" depth="0.001" material="color:#9c8968"></a-box>
+    <!-- CIBLE : LA BANNIÈRE -->
+    <a-entity
+      id="target"
+      mindar-image-target="targetIndex: 0">
+
+      <!-- LIVRE ANCIEN -->
+      <a-entity
+        id="livre"
+        position="-0.16 0.02 0.12"
+        scale="0.001 0.001 0.001">
+
+        <!-- DOS DU LIVRE -->
+        <a-box
+          position="0 0 0"
+          width="0.32"
+          height="0.025"
+          depth="0.21"
+          material="color: #54251a; roughness: 0.8">
+        </a-box>
+
+        <!-- PAGES -->
+        <a-box
+          position="0 0.017 0"
+          width="0.30"
+          height="0.012"
+          depth="0.19"
+          material="color: #e8d9b5">
+        </a-box>
+
+        <!-- PAGE GAUCHE -->
+        <a-box
+          position="-0.075 0.025 0"
+          width="0.145"
+          height="0.008"
+          depth="0.18"
+          material="color: #f4e8c9">
+        </a-box>
+
+        <!-- PAGE DROITE -->
+        <a-box
+          position="0.075 0.025 0"
+          width="0.145"
+          height="0.008"
+          depth="0.18"
+          material="color: #f4e8c9">
+        </a-box>
+
+        <!-- COUVERTURE GAUCHE -->
+        <a-box
+          position="-0.08 0.035 0"
+          width="0.16"
+          height="0.015"
+          depth="0.21"
+          material="color: #54251a; metalness: 0.2">
+        </a-box>
+
+        <!-- COUVERTURE DROITE ARTICULÉE -->
+        <a-entity id="couverture" position="0 0.035 0">
+
+          <a-box
+            position="0.08 0 0"
+            width="0.16"
+            height="0.015"
+            depth="0.21"
+            material="color: #682d1d; metalness: 0.2">
+          </a-box>
+
+          <!-- ORNEMENT DORÉ -->
+          <a-box
+            position="0.08 0.009 0"
+            width="0.13"
+            height="0.002"
+            depth="0.17"
+            material="color: #d9b56d; metalness: 0.7">
+          </a-box>
+
+          <a-text
+            value="PAOLI"
+            position="0.08 0.012 0"
+            rotation="-90 0 0"
+            align="center"
+            color="#f4d58d"
+            width="0.3">
+          </a-text>
+
         </a-entity>
-        <!-- Couverture gauche fixe -->
-        <a-box position="-0.079 0.018 0" width="0.158" height="0.012" depth="0.207"
-          material="color:#54251a; roughness:0.55; metalness:0.12"></a-box>
-        <!-- Couverture droite articulée autour de la reliure -->
-        <a-entity id="frontCoverPivot" position="0 0.025 0">
-          <a-box position="0.079 0 0" width="0.158" height="0.014" depth="0.211"
-            material="color:#682d1d; roughness:0.48; metalness:0.15"></a-box>
-          <a-box position="0.079 0.008 0" width="0.132" height="0.002" depth="0.178"
-            material="color:#c59b50; metalness:0.65; roughness:0.3"></a-box>
-          <a-torus position="0.079 0.010 0" rotation="90 0 0" radius="0.045" radius-tubular="0.002"
-            material="color:#e6c477; metalness:0.7; roughness:0.25"></a-torus>
-          <a-text value="PAOLI" align="center" color="#f2d38b" width="0.34"
-            position="0.079 0.012 0" rotation="-90 0 0"></a-text>
+
+        <!-- PORTRAIT ET PAYSAGE QUI SORTENT DU LIVRE -->
+        <a-entity
+          id="popUp"
+          position="0 0.04 0"
+          scale="0.001 0.001 0.001">
+
+          <!-- MÉDAILLON -->
+          <a-cylinder
+            position="0.07 0.08 0"
+            radius="0.04"
+            height="0.01"
+            rotation="90 0 0"
+            material="color: #bd9148; metalness: 0.7">
+          </a-cylinder>
+
+          <!-- VISAGE STYLISÉ -->
+          <a-sphere
+            position="0.07 0.10 0.01"
+            radius="0.022"
+            material="color: #d8b28a">
+          </a-sphere>
+
+          <!-- CHEVEUX -->
+          <a-sphere
+            position="0.07 0.115 0.01"
+            radius="0.024"
+            scale="1 0.55 0.9"
+            material="color: #27384b">
+          </a-sphere>
+
+          <!-- MONTAGNES CORSES -->
+          <a-cone
+            position="-0.07 0.07 -0.02"
+            radius-bottom="0.055"
+            radius-top="0.001"
+            height="0.10"
+            material="color: #526c59">
+          </a-cone>
+
+          <a-cone
+            position="-0.01 0.08 -0.02"
+            radius-bottom="0.07"
+            radius-top="0.001"
+            height="0.13"
+            material="color: #8b9b78">
+          </a-cone>
+
         </a-entity>
-        <!-- Relief qui jaillit des pages : médaillon / portrait stylisé -->
-        <a-entity id="popUp" position="0 0.035 0.015" scale="0.001 0.001 0.001">
-          <a-cylinder position="0.065 0.085 0" radius="0.036" height="0.009"
-            rotation="90 0 0" material="color:#bd9148; metalness:0.65; roughness:0.3"></a-cylinder>
-          <a-sphere position="0.065 0.09 0.012" radius="0.022"
-            material="color:#d8b28a; roughness:0.8"></a-sphere>
-          <a-sphere position="0.065 0.105 0.009" radius="0.024" scale="1 0.55 0.9"
-            material="color:#27384b; roughness:0.9"></a-sphere>
-          <a-cone position="-0.065 0.065 -0.018" radius-bottom="0.055" radius-top="0.001" height="0.095"
-            material="color:#526c59; roughness:0.9"></a-cone>
-          <a-cone position="-0.005 0.075 -0.022" radius-bottom="0.07" radius-top="0.001" height="0.12"
-            material="color:#8b9b78; roughness:0.9"></a-cone>
-          <a-box position="-0.035 0.025 0.005" width="0.2" height="0.004" depth="0.025"
-            material="color:#d2b36c; metalness:0.35"></a-box>
-        </a-entity>
+
       </a-entity>
 
-      <a-torus id="halo" position="-0.16 0 0.15" radius="0.19" radius-tubular="0.003"
-        material="color:#e7c477; emissive:#a9782c; emissiveIntensity:1.4"
-        scale="0.001 0.001 0.001"></a-torus>
+      <!-- HALO DORÉ -->
+      <a-torus
+        id="halo"
+        position="-0.16 0 0.15"
+        radius="0.19"
+        radius-tubular="0.004"
+        material="
+          color: #e7c477;
+          emissive: #a9782c;
+          emissiveIntensity: 1.5
+        "
+        scale="0.001 0.001 0.001">
+      </a-torus>
 
-      <a-entity id="particles">
-        <a-sphere class="spark" radius="0.008" position="-0.36 0.02 0.14" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
-        <a-sphere class="spark" radius="0.006" position="-0.02 0.06 0.16" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
-        <a-sphere class="spark" radius="0.007" position="-0.34 -0.05 0.12" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
-        <a-sphere class="spark" radius="0.005" position="0.03 -0.03 0.18" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
-        <a-sphere class="spark" radius="0.006" position="-0.18 0.12 0.13" material="color:#f3d48a; emissive:#e8b94f"></a-sphere>
+      <!-- PARTICULES -->
+      <a-entity id="particules">
+
+        <a-sphere
+          class="etincelle"
+          position="-0.36 0.02 0.14"
+          radius="0.008"
+          material="color: #f3d48a; emissive: #e8b94f"
+          scale="0.001 0.001 0.001">
+        </a-sphere>
+
+        <a-sphere
+          class="etincelle"
+          position="-0.02 0.06 0.16"
+          radius="0.008"
+          material="color: #f3d48a; emissive: #e8b94f"
+          scale="0.001 0.001 0.001">
+        </a-sphere>
+
+        <a-sphere
+          class="etincelle"
+          position="-0.34 -0.05 0.12"
+          radius="0.008"
+          material="color: #f3d48a; emissive: #e8b94f"
+          scale="0.001 0.001 0.001">
+        </a-sphere>
+
       </a-entity>
 
-      <a-entity id="anniversary" position="0.29 -0.005 0.13" scale="0.001 0.001 0.001">
-        <a-text value="300" align="center" color="#f0d18a" width="1.1" position="0 0.045 0" side="double"></a-text>
-        <a-text value="ANNI" align="center" color="#f0d18a" width="0.8" position="0 -0.025 0" side="double"></a-text>
+      <!-- TITRE 300 ANNI -->
+      <a-entity
+        id="titre300"
+        position="0.29 0 0.13"
+        scale="0.001 0.001 0.001">
+
+        <a-text
+          value="300"
+          position="0 0.04 0"
+          align="center"
+          color="#f0d18a"
+          width="1.1">
+        </a-text>
+
+        <a-text
+          value="ANNI"
+          position="0 -0.025 0"
+          align="center"
+          color="#f0d18a"
+          width="0.8">
+        </a-text>
+
       </a-entity>
+
     </a-entity>
+
   </a-scene>
 
   <script>
-    const statusEl = document.getElementById('status');
-    const hintEl = document.getElementById('hint');
-    const book = document.getElementById('book');
-    const cover = document.getElementById('frontCoverPivot');
-    const popUp = document.getElementById('popUp');
-    const halo = document.getElementById('halo');
-    const anniversary = document.getElementById('anniversary');
-    const sparks = document.querySelectorAll('.spark');
-    let timeline = null;
+    const cible = document.querySelector("#target");
+    const livre = document.querySelector("#livre");
+    const couverture = document.querySelector("#couverture");
+    const popUp = document.querySelector("#popUp");
+    const halo = document.querySelector("#halo");
+    const titre300 = document.querySelector("#titre300");
+    const message = document.querySelector("#message");
+    const etincelles = document.querySelectorAll(".etincelle");
 
-    function resetScene() {
-      if (timeline) timeline.kill();
-      book.setAttribute('scale', '0.001 0.001 0.001');
-      book.setAttribute('position', '-0.16 -0.005 0.11');
-      cover.setAttribute('rotation', '0 0 0');
-      popUp.setAttribute('scale', '0.001 0.001 0.001');
-      halo.setAttribute('scale', '0.001 0.001 0.001');
-      anniversary.setAttribute('scale', '0.001 0.001 0.001');
-      sparks.forEach(s => s.setAttribute('scale', '0.001 0.001 0.001'));
-    }
+    let animation;
 
-    function playSequence() {
-      resetScene();
-      const s = {book:0.001, halo:0.001, pop:0.001, title:0.001, coverY:0};
-      timeline = gsap.timeline();
-      timeline.to(s, {book:1, duration:0.7, ease:'back.out(1.5)',
-        onUpdate:()=>book.setAttribute('scale',`${s.book} ${s.book} ${s.book}`)}, 0.05);
-      timeline.to(s, {halo:1, duration:0.7, ease:'power2.out',
-        onUpdate:()=>halo.setAttribute('scale',`${s.halo} ${s.halo} ${s.halo}`)}, 0.25);
-      timeline.to(s, {coverY:-155, duration:1.25, ease:'power2.inOut',
-        onUpdate:()=>cover.setAttribute('rotation',`0 ${s.coverY} 0`)}, 0.8);
-      timeline.to(s, {pop:1, duration:0.8, ease:'back.out(1.8)',
-        onUpdate:()=>popUp.setAttribute('scale',`${s.pop} ${s.pop} ${s.pop}`)}, 2.25);
-      sparks.forEach((spark,i)=>{
-        const p={scale:0.001};
-        timeline.to(p,{scale:1,duration:0.3,yoyo:true,repeat:2,
-          onUpdate:()=>spark.setAttribute('scale',`${p.scale} ${p.scale} ${p.scale}`)},1.65+i*0.12);
+    function remettreAZero() {
+      if (animation) animation.kill();
+
+      livre.setAttribute("scale", "0.001 0.001 0.001");
+      couverture.setAttribute("rotation", "0 0 0");
+      popUp.setAttribute("scale", "0.001 0.001 0.001");
+      halo.setAttribute("scale", "0.001 0.001 0.001");
+      titre300.setAttribute("scale", "0.001 0.001 0.001");
+
+      etincelles.forEach(e => {
+        e.setAttribute("scale", "0.001 0.001 0.001");
       });
-      timeline.to(s,{title:1,duration:0.65,ease:'back.out(1.8)',
-        onUpdate:()=>anniversary.setAttribute('scale',`${s.title} ${s.title} ${s.title}`)},4.0);
-      timeline.call(()=>{statusEl.textContent='Le livre de Paoli est ouvert';},[],5);
     }
 
-    const target=document.getElementById('target');
-    target.addEventListener('targetFound',()=>{
-      statusEl.textContent='Bannière reconnue';
-      hintEl.textContent='Le livre de Paoli s’ouvre…';
-      playSequence();
+    function lancerAnimation() {
+      remettreAZero();
+
+      const etat = {
+        livre: 0.001,
+        halo: 0.001,
+        ouverture: 0,
+        relief: 0.001,
+        titre: 0.001
+      };
+
+      animation = gsap.timeline();
+
+      // Le livre apparaît
+      animation.to(etat, {
+        livre: 1,
+        duration: 0.7,
+        ease: "back.out(1.5)",
+        onUpdate: () => {
+          livre.setAttribute(
+            "scale",
+            `${etat.livre} ${etat.livre} ${etat.livre}`
+          );
+        }
+      }, 0);
+
+      // Le halo doré
+      animation.to(etat, {
+        halo: 1,
+        duration: 0.7,
+        onUpdate: () => {
+          halo.setAttribute(
+            "scale",
+            `${etat.halo} ${etat.halo} ${etat.halo}`
+          );
+        }
+      }, 0.2);
+
+      // Le livre s'ouvre
+      animation.to(etat, {
+        ouverture: -155,
+        duration: 1.25,
+        ease: "power2.inOut",
+        onUpdate: () => {
+          couverture.setAttribute(
+            "rotation",
+            `0 ${etat.ouverture} 0`
+          );
+        }
+      }, 0.8);
+
+      // Le portrait et les montagnes apparaissent
+      animation.to(etat, {
+        relief: 1,
+        duration: 0.8,
+        ease: "back.out(1.8)",
+        onUpdate: () => {
+          popUp.setAttribute(
+            "scale",
+            `${etat.relief} ${etat.relief} ${etat.relief}`
+          );
+        }
+      }, 2.2);
+
+      // Les particules scintillent
+      etincelles.forEach((e, i) => {
+        const p = { s: 0.001 };
+
+        animation.to(p, {
+          s: 1,
+          duration: 0.3,
+          yoyo: true,
+          repeat: 2,
+          onUpdate: () => {
+            e.setAttribute("scale", `${p.s} ${p.s} ${p.s}`);
+          }
+        }, 1.6 + i * 0.15);
+      });
+
+      // Le titre apparaît
+      animation.to(etat, {
+        titre: 1,
+        duration: 0.65,
+        ease: "back.out(1.8)",
+        onUpdate: () => {
+          titre300.setAttribute(
+            "scale",
+            `${etat.titre} ${etat.titre} ${etat.titre}`
+          );
+        }
+      }, 4);
+
+      animation.call(() => {
+        message.textContent = "300 ANNI · PASQUALE PAOLI";
+      }, [], 5);
+    }
+
+    cible.addEventListener("targetFound", () => {
+      message.textContent = "Bannière reconnue !";
+      lancerAnimation();
     });
-    target.addEventListener('targetLost',()=>{
-      statusEl.textContent='Bannière non détectée';
-      hintEl.textContent='Pointe la caméra vers la bannière';
-      resetScene();
+
+    cible.addEventListener("targetLost", () => {
+      message.textContent = "Recherche de la bannière...";
+      remettreAZero();
     });
-    document.querySelector('a-scene').addEventListener('loaded',()=>{
-      statusEl.textContent='Autorise la caméra puis scanne la bannière';
+
+    const scene = document.querySelector("a-scene");
+
+    scene.addEventListener("arReady", () => {
+      message.textContent = "Caméra prête · Scanne la bannière";
     });
-    document.querySelector('a-scene').addEventListener('arError',()=>{
-      statusEl.textContent='Erreur AR : vérifie les permissions caméra et le fichier paoli.mind';
+
+    scene.addEventListener("arError", () => {
+      message.textContent = "Erreur AR : vérifie la caméra et la cible MindAR";
     });
   </script>
+
 </body>
 </html>
